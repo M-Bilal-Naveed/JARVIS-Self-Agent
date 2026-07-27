@@ -1,0 +1,7 @@
+create a venv virtual environment 
+and then install the libraries
+pip install 
+speechrecognition
+pyaudio
+setuptools
+pyttsx3
