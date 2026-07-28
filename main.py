@@ -1,6 +1,10 @@
 import speech_recognition as sr
 import webbrowser
 import pyttsx3
+from news_client import get_news
+from sitesLibrary import websites
+from musicLibrary import music
+from open_ai_client import aiProcess
 
 recognizer = sr.Recognizer()
 engine= pyttsx3.init()
@@ -10,7 +14,29 @@ def speak(text):
     engine.runAndWait()
 
 def processCommand(c):
-    print(c)
+    if c.lower().startswith('open'):
+        site = c.lower().split(" ")[1]
+        link = websites[site]
+        webbrowser.open(link)
+
+    elif c.lower().startswith('play'):
+        song = c.lower().split(" ")[1]
+        link = music[song]
+        webbrowser.open(link)
+
+    elif "news"in c.lower():
+         articles = get_news()
+
+         if articles:
+             for article in articles:
+                 speak(article["title"])
+         else:
+             speak("Sorry, I cannot read the news now.")
+
+    else:
+        #go to open Ai account
+        output = aiProcess(c)
+        speak(output)
 
 if __name__ == "__main__":
     speak("Initializing Jarvis")
@@ -21,12 +47,12 @@ if __name__ == "__main__":
 
         r = sr.Recognizer()
 
-        print('recognizing')
+        print('recognizing....')
 
         try:
             with sr.Microphone() as source:
                 print('Listening....')
-                audio = r.listen(source, timeout=2, phrase_time_limit=1)
+                audio = r.listen(source, timeout=5, phrase_time_limit=3)
             word = r.recognize_google(audio)
 
             if(word.lower() == 'jarvis'):
@@ -34,7 +60,7 @@ if __name__ == "__main__":
 
                 #Listen the command
 
-                with sr.Microphone as source:
+                with sr.Microphone() as source:
                     print('Jarvis active')
                     audio = r.listen(source)
                     command = r.recognize_google(audio)
